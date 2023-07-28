@@ -1,6 +1,7 @@
 import aiohttp
 
 from .const import MODEL_DETAIL, DEFAULT_TIMEOUT
+from .exceptions import NotAuthorizedException, NetworkException
 
 class AsyncYardianClient:
     def __init__(
@@ -13,49 +14,70 @@ class AsyncYardianClient:
         }
 
     async def fetch_oper_info(self):
-        resp = await (
-            await self._websession.request(
-                "GET",
-                f"{self._base_url}/API_MGR_GET_OPERINFO",
-                headers=self._base_header,
-                timeout=DEFAULT_TIMEOUT,
-            )
-        ).json()
+        try:
+            resp = await (
+                await self._websession.request(
+                    "GET",
+                    f"{self._base_url}/API_MGR_GET_OPERINFO",
+                    headers=self._base_header,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            ).json()
+        except:
+            raise NetworkException()
+        else:
+            iCode = resp.get("iCode", 0)
+            if iCode == 0:
+                return resp["result"]
+            elif iCode == -1000:
+                raise NotAuthorizedException()
+            else:
+                raise Exception()
 
-        if "iCode" in resp and resp["iCode"] != 0:
-            raise Exception()
-
-        return resp["result"]
 
     async def fetch_device_info(self):
-        resp = await (
-            await self._websession.request(
-                "GET",
-                f"{self._base_url}/API_GET_DEVICEINFO",
-                headers=self._base_header,
-                timeout=DEFAULT_TIMEOUT,
-            )
-        ).json()
+        try:
+            resp = await (
+                await self._websession.request(
+                    "GET",
+                    f"{self._base_url}/API_GET_DEVICEINFO",
+                    headers=self._base_header,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            ).json()
+        except:
+            raise NetworkException()
+        else:
+            iCode = resp.get("iCode", 0)
+            if iCode == 0:
+                return resp | MODEL_DETAIL[resp["model"]]
+            elif iCode == -1000:
+                raise NotAuthorizedException()
+            else:
+                raise Exception()
 
-        if "iCode" in resp and resp["iCode"] != 0:
-            raise Exception()
-
-        return resp | MODEL_DETAIL[resp["model"]]
 
     async def fetch_active_zones(self):
-        resp = await (
-            await self._websession.request(
-                "GET",
-                f"{self._base_url}/API_ZONE_GET_OPENINGZONE",
-                headers=self._base_header,
-                timeout=DEFAULT_TIMEOUT,
-            )
-        ).json()
+        try:
+            resp = await (
+                await self._websession.request(
+                    "GET",
+                    f"{self._base_url}/API_ZONE_GET_OPENINGZONE",
+                    headers=self._base_header,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            ).json()
+        except:
+            raise NetworkException()
+        else:
+            iCode = resp.get("iCode", 0)
+            if iCode == 0:
+                return resp["result"]
+            elif iCode == -1000:
+                raise NotAuthorizedException()
+            else:
+                raise Exception()
 
-        if "iCode" in resp and resp["iCode"] != 0:
-            raise Exception()
-
-        return resp["result"]
 
     async def fetch_zone_info(self, amount=8):
         oper_info = await self.fetch_oper_info()
