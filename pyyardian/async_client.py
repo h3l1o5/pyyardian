@@ -2,6 +2,7 @@ import aiohttp
 
 from .const import MODEL_DETAIL, DEFAULT_TIMEOUT
 from .exceptions import NotAuthorizedException, NetworkException
+from .typing import DeviceInfo, OperationInfo
 
 class AsyncYardianClient:
     def __init__(
@@ -13,7 +14,7 @@ class AsyncYardianClient:
             "Yardian-Token": token
         }
 
-    async def fetch_oper_info(self):
+    async def fetch_oper_info(self) -> OperationInfo:
         try:
             resp = await (
                 await self._websession.request(
@@ -35,7 +36,7 @@ class AsyncYardianClient:
                 raise Exception()
 
 
-    async def fetch_device_info(self):
+    async def fetch_device_info(self) -> DeviceInfo:
         try:
             resp = await (
                 await self._websession.request(
