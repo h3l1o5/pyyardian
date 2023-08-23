@@ -1,8 +1,16 @@
 import aiohttp
+from dataclasses import dataclass
 
 from .const import MODEL_DETAIL, DEFAULT_TIMEOUT
 from .exceptions import NotAuthorizedException, NetworkException
 from .typing import DeviceInfo, OperationInfo
+
+@dataclass
+class YardianDeviceState:
+    """Data retrieved from a Yardian device."""
+
+    zones: list[list]
+    active_zones: set[int]
 
 class AsyncYardianClient:
     def __init__(
@@ -13,6 +21,7 @@ class AsyncYardianClient:
         self._base_header = {
             "Yardian-Token": token
         }
+        self._device_info = None
 
     async def fetch_oper_info(self) -> OperationInfo:
         try:
@@ -83,6 +92,13 @@ class AsyncYardianClient:
     async def fetch_zone_info(self, amount=8):
         oper_info = await self.fetch_oper_info()
         return oper_info["zones"][:amount]
+
+    async def fetch_device_state(self):
+        if not self._device_info:
+            self._device_info = await self.fetch_device_info()
+        zones = await self.fetch_zone_info(self._device_info['zones'])
+        active_zones = await self.fetch_active_zones()
+        return YardianDeviceState(zones=zones, active_zones=active_zones)
 
     async def start_irrigation(self, zone_id, duration):
         body = {
