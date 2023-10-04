@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pyyardian",
-    version="1.1.0",
+    version="1.1.1",
     license="MIT",
     author="Marty Sun",
     author_email="marty.sun@aeonmatrix.com",

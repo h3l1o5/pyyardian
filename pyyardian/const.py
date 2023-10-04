@@ -7,6 +7,7 @@ MODEL_DETAIL = {
     "PRO1602": {"name": "Yardian Pro", "zones": 8},
     "PRO1900": {"name": "Yardian Pro", "zones": 12},
     "PRO1902": {"name": "Yardian Pro", "zones": 8},
+    "PRO1906": {"name": "Yardian Pro", "zones": 6},
 }
 
 DEFAULT_TIMEOUT = 30
