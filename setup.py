@@ -11,5 +11,8 @@ setup(
     long_description=" Python module for interacting with the Yardian irrigation controller. This module communicates directly towards the IP address of the Yardian device.",
     long_description_content_type="text/markdown",
     url="https://github.com/h3l1o5/pyyardian",
+    install_requires=[
+        "aiohttp",
+    ],
     packages=find_packages()
 )
